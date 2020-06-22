@@ -1,8 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io' as io;
 
-import 'package:flutter/services.dart';
 import 'package:googlecloudspeech/googlecloudspeech.dart';
+import 'package:flutter/services.dart';
+
 
 void main() => runApp(MyApp());
 
@@ -13,42 +18,73 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
+  String _apiKey = '';
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
+  Future<void> getListOfOperations() async {
+
+    Map<String, dynamic> responseBody = await GoogleSTTOperations.v1_list({}, _apiKey);
+
+    print("----------");
+    print(responseBody);
+    print("----------");
+
+    // await GoogleSTTOperations.v1_get();
+  }
+
+  Future<void> speechToText() async {
+
     try {
-      platformVersion = await Googlecloudspeech.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
+      // This is an example asset file. Replace this with a file on the device
+      var bytes            = await rootBundle.load('assets/example_file.flac');
+      String base64audio   = base64.encode(Uint8List.view(bytes.buffer));
+
+      Map<String, dynamic> response = await GoogleSTTSpeech.v1_recognize({}, _apiKey, base64audio);
+
+      print("-------------------------------");
+      print(response['results']['transcript']);
+      print("-------------------------------");
+
+    } catch (e) {
+      print(e.toString());
     }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+      debugShowCheckedModeBanner : false,
+      home                       : Scaffold(
+        appBar : AppBar(title: const Text('google_cloud_speech example'),),
+        body   : Center(
+
+            child : Column(
+              mainAxisAlignment : MainAxisAlignment.center,
+
+              children : <Widget>[
+                Container(
+                  height : 60,
+                  width  : 270,
+                  decoration : BoxDecoration(
+                    borderRadius : BorderRadius.circular(10.0),
+                    color        : Colors.white,
+                  ),
+
+                  child : MaterialButton(
+                    highlightColor : Colors.grey[600],
+                    shape          : RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+
+                    child : Text('Operations List', style : TextStyle(fontSize : 25, fontWeight : FontWeight.bold, color : Colors.grey[500])),
+                    onPressed: () { speechToText(); },
+                  ),
+                ),
+              ],
+            )
         ),
       ),
     );

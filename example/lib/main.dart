@@ -32,8 +32,6 @@ class _MyAppState extends State<MyApp> {
     print("----------");
     print(responseBody);
     print("----------");
-
-    // await GoogleSTTOperations.v1_get();
   }
 
   Future<void> speechToText() async {

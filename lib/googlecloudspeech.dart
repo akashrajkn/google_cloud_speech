@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-
 /// This resource represents a long-running operation that is the result of a network API call.
 class GoogleSTTOperations {
 
@@ -20,14 +19,12 @@ class GoogleSTTOperations {
     return json.decode(response.body);
   }
 
-
   static Future<void> v1_get() async {
     /// GET https://speech.googleapis.com/v1/operations/{name=**}
 
     throw Exception('Not implemented');
   }
 }
-
 
 /// Convert speech to text
 class GoogleSTTSpeech {
@@ -74,5 +71,3 @@ class GoogleSTTSpeech {
     return json.decode(response.body);
   }
 }
-
-

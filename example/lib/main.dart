@@ -17,6 +17,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
 
+  // ADD API_KEY HERE
   String _apiKey = '';
 
   @override
@@ -44,9 +45,9 @@ class _MyAppState extends State<MyApp> {
 
       Map<String, dynamic> response = await GoogleSTTSpeech.v1_recognize({}, _apiKey, base64audio);
 
-      print("-------------------------------");
-      print(response['results']['transcript']);
-      print("-------------------------------");
+      print("------");
+      print(response);
+      print("------");
 
     } catch (e) {
       print(e.toString());

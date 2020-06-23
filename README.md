@@ -1,4 +1,4 @@
-# googlecloudspeech
+# google_cloud_speech
 
 Flutter plugin for google speech api
 

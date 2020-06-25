@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import 'package:googlecloudspeech/utils.dart';
+
 /// This resource represents a long-running operation that is the result of a network API call.
 class GoogleSTTOperations {
 
@@ -42,29 +44,41 @@ class GoogleSTTSpeech {
   static Future<Map<String, dynamic>> v1_recognize(
       Map<String, String> config,
       String api_key,
-      String b64_audio
+      String audio_type,
+      String audio_src,
       ) async {
     /// POST https://speech.googleapis.com/v1/speech:recognize
+    /// audio_type can be either 'file_path' or 'base64'
+
+    String content = '';
+
+    if (audio_type == 'file_path') {
+      content = await ConvertType.audioToBase64(audio_src);
+    } else {
+      content = audio_src;
+    }
+
+    print("----- CONTENT -----");
+    print(content);
+    print("-------------------");
 
     /// Request URL
     String baseUrl              = 'https://speech.googleapis.com/v1/speech:recognize';
-    String speechUrl    = baseUrl + '?key=' + api_key;
+    String speechUrl            = baseUrl + '?key=' + api_key;
     Map<String, String> headers = {};
+
+    if (config.isEmpty) {
+      config['languageCode'] = 'en-US';
+    }
 
     http.Response response = await http.post(
         speechUrl,
-        headers: <String, String>{
-
-        },
-        body: jsonEncode(<String, dynamic>{
+        headers : <String, String>{},
+        body    : jsonEncode(<String, dynamic>{
           'audio': {
-            'content' : b64_audio
+            'content' : content
           },
-          'config': {
-            'encoding': 'FLAC',
-            'sampleRateHertz': 16000,
-            'languageCode': 'en-US'
-          }
+          'config': config
         })
     );
 
